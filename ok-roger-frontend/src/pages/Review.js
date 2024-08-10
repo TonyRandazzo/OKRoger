@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Review = () => {
-  const { id } = useParams(); 
-  const companyId = id; 
+  const { id } = useParams();
+  const companyId = id;
   const [text, setText] = useState('');
   const [anonymous, setAnonymous] = useState(false);
   const [rating, setRating] = useState(1);
@@ -16,14 +16,14 @@ const Review = () => {
       navigate('/');
       return;
     }
-  
+
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/companies/${companyId}/reviews`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ companyId, text, anonymous, rating }), 
+      body: JSON.stringify({ companyId, text, anonymous, rating }),
     })
       .then(response => response.json())
       .then(data => {
@@ -44,8 +44,8 @@ const Review = () => {
         </label>
         <label>
           Rating:
-          <select value={rating} onChange={(e) => setRating(parseInt(e.target.value, 10))}>
-            {[1, 2, 3, 4, 5].map(star => (
+          <select value={rating} onChange={(e) => setRating(parseFloat(e.target.value))}>
+            {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((star) => (
               <option key={star} value={star}>{star}</option>
             ))}
           </select>

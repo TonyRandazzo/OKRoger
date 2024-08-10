@@ -3,6 +3,7 @@ body {
   color: #faa761;
   font-family: serif;
 }
+
 a{
   color: inherit;
   text-decoration: none;
@@ -169,14 +170,13 @@ button:hover {
 
 .company-card:hover {
   transform: scale(1.1, 1.1);
-  border: 1px, solid, #faa761;
+  border: 1px, solid, rgb(250, 167, 97);
 }
 
 .company-card img {
   width: 100%;
   height: 200px; 
   object-fit: cover;
-  border-bottom: 2px solid #faa761;
 }
 .company-card-content {
   padding-left: 20px;
@@ -634,6 +634,7 @@ select option:hover {
 }
 
 @media (max-width: 768px) {
+
   .hamburger {
     display: block;
   }
@@ -683,7 +684,13 @@ select option:hover {
 }
 
 @media (max-width: 480px) {
-
+  .company-card{
+    width: 20px;
+  }
+  .company-cards-container{
+    width: 350px;
+    margin-left: 30px;
+  }
   .company-detail{
     height: 800px;
   }
@@ -702,12 +709,12 @@ select option:hover {
     right: 0;
   }
   .main-bar{
-    font-size: 15px;
-    height: 40px;
+    font-size: 27px;
+    height: 60px;
     background-size: 15px 15px; 
   }
   .main-bar::placeholder{
-    font-size: 15px;
+    font-size: 27px;
     padding-left: 50px;
   }
   .search-button {

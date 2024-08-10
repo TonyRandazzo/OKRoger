@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import starImage from '../immagini/Tire.png';
+import halfStarImage from '../immagini/Half-Tire.png'; 
 
 const CompanyDetail = () => {
   const { id } = useParams();
@@ -162,7 +164,12 @@ const CompanyDetail = () => {
               <small className="review-author">
                 {review.anonymous ? 'Anonymous' : `${firstName} ${lastName}`}
               </small>
-              <div className="review-rating">Rating: {review.rating} Stars</div>
+              <div className="review-rating">
+                Rating:
+                {Array(review.rating).fill(0).map((_, index) => (
+                  <img src={starImage} alt="star" key={index} style={{ width: 20, height: 20 }} />
+                ))}
+              </div>
               {/* <div className="review-votes">
                 <button onClick={() => handleUpvote(review.id)}>Upvote {review.upvotes}</button>
                 <button onClick={() => handleDownvote(review.id)}>Downvote {review.downvotes}</button>

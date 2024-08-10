@@ -232,6 +232,18 @@ app.put('/api/companies/:id', upload.single('photo'), (req, res) => {
   });
 });
 
+app.get('/api/companies/:id/reviews', (req, res) => {
+  const companyId = req.params.id;
+  db.query(`SELECT * FROM reviews WHERE companyId = ?`, [companyId], (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 app.get('/api/users/:firstName/:lastName', (req, res) => {
   const { firstName, lastName } = req.params;
   const query = 'SELECT * FROM users WHERE firstName = ? AND lastName = ?';
@@ -291,6 +303,18 @@ app.get('/api/companies/:id', (req, res) => {
     }
   });
 });
+app.get('/api/companies/:id/average-rating', (req, res) => {
+  const companyId = req.params.id;
+  db.query(`SELECT AVG(rating) AS average_rating FROM reviews WHERE companyId = ?`, [companyId], (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      const averageRating = Math.round(results[0].average_rating * 2) / 2;
+      res.json({ averageRating });
+    }
+  });
+});
 app.post('/api/reviews/:id/upvote', (req, res) => {
   const reviewId = req.params.id;
   db.query(`UPDATE reviews SET upvotes = upvotes + 1 WHERE id = ?`, [reviewId], (err, result) => {
@@ -319,8 +343,8 @@ app.post('/api/reviews/:id/downvote', (req, res) => {
 app.post('/api/companies/:id/reviews', (req, res) => {
   const { text, anonymous, rating, companyId } = req.body;
 
-  if (!rating || rating < 1 || rating > 5) {
-    return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+  if (!rating || rating < 0.5 || rating > 5 || rating % 0.5 !== 0) {
+    return res.status(400).json({ error: 'Rating must be between 0.5 and 5, with increments of 0.5' });
   }
 
   const query = 'INSERT INTO reviews (companyId, text, anonymous, rating) VALUES (?, ?, ?, ?)';
