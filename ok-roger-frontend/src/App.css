@@ -467,7 +467,6 @@ button:hover {
 .user-profile {
   padding: 20px;
   max-width: 600px;
-  margin: auto;
   text-align: center;
 }
 
@@ -590,9 +589,11 @@ select option:hover {
 
 
 .user-profile {
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 20px;
   max-width: 600px;
-  margin: auto;
   text-align: center;
   background-color: #fff;
   border-radius: 8px;

@@ -177,50 +177,89 @@ const LoginRegister = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('User type:', userType); 
+    console.log('User type:', userType);
     if (formData.password.length < 8 || /\s/.test(formData.password)) {
       alert('La password deve essere di almeno 8 caratteri e non deve contenere spazi.');
       return;
     }
   
-    const endpoint = isRegister ? `${process.env.REACT_APP_BACKEND_URL}/api/register` : `${process.env.REACT_APP_BACKEND_URL}/api/login`;
+    const registerEndpoint = `${process.env.REACT_APP_BACKEND_URL}/api/register`;
+    const loginEndpoint = `${process.env.REACT_APP_BACKEND_URL}/api/login`;
   
     const data = {
       userType,
       ...formData
     };
   
-    fetch(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('userType', userType);
-          if (userType === 'employee') {
-            localStorage.setItem('firstName', data.firstName);
-            localStorage.setItem('lastName', data.lastName);
-            localStorage.setItem('companyWorkedAt', data.companyWorkedAt);
-            localStorage.setItem('password', data.password);
-          } else if (userType === 'company') {
-            localStorage.setItem('name', data.name);
-            localStorage.setItem('photo', data.photo);
-            localStorage.setItem('description', data.description);
-            localStorage.setItem('location', data.location);
-            localStorage.setItem('password', data.password);
-          }
-          alert("Operazione riuscita!");
-          navigate('/home');
-        } else {
-          alert("C'è stato un errore");
-          console.error('Error:', data.error);
+    const performLogin = (loginData) => {
+      fetch(loginEndpoint, {
+        method: 'POST',
+        body: JSON.stringify(loginData),
+        headers: {
+          'Content-Type': 'application/json'
         }
-      })      
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userType', userType);
+            if (userType === 'employee') {
+              localStorage.setItem('firstName', data.firstName);
+              localStorage.setItem('lastName', data.lastName);
+              localStorage.setItem('companyWorkedAt', data.companyWorkedAt);
+              localStorage.setItem('password', data.password);
+            } else if (userType === 'company') {
+              localStorage.setItem('name', data.name);
+              localStorage.setItem('photo', data.photo);
+              localStorage.setItem('description', data.description);
+              localStorage.setItem('location', data.location);
+              localStorage.setItem('password', data.password);
+            }
+            alert("Login riuscito!");
+            navigate('/home');
+          } else {
+            alert("Errore durante il login");
+            console.error('Error:', data.error);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert("Errore durante il login");
+        });
+    };
+  
+    if (isRegister) {
+      fetch(registerEndpoint, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Registrazione riuscita! Effettuo il login...");
+            const loginData = {
+              userType,
+              ...(userType === 'employee' 
+                ? { firstName: formData.firstName, lastName: formData.lastName, password: formData.password }
+                : { name: formData.name, password: formData.password })
+            };
+            performLogin(loginData);
+          } else {
+            alert("Errore durante la registrazione");
+            console.error('Error:', data.error);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert("Errore durante la registrazione");
+        });
+    } else {
+      performLogin(data);
+    }
   };
 
   return (

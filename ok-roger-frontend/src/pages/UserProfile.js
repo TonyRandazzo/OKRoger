@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
 
@@ -60,21 +59,40 @@ const UserProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let response;
       if (user.userType === 'employee') {
-        await axios.put(`/api/users/${user.id}`, formData);
+        response = await fetch(`/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
       } else if (user.userType === 'company') {
         const formDataWithFile = new FormData();
         Object.keys(formData).forEach((key) => {
           formDataWithFile.append(key, formData[key]);
         });
-        await axios.put(`/api/companies/${user.id}`, formDataWithFile, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        response = await fetch(`/api/companies/${user.id}`, {
+          method: 'PUT',
+          body: formDataWithFile,
         });
       }
-      alert('Profile updated successfully');
-      setIsEditing(false);
+
+      if (response.ok) {
+        // Update localStorage
+        Object.keys(formData).forEach((key) => {
+          localStorage.setItem(key, formData[key]);
+        });
+
+        // Update user state
+        setUser({ ...user, ...formData });
+
+        alert('Profile updated successfully');
+        setIsEditing(false);
+      } else {
+        throw new Error('Failed to update profile');
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Failed to update profile');
